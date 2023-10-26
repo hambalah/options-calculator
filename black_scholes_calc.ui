@@ -386,7 +386,7 @@
      <string>Put Option Price</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="lineEdit_CallPrice_2">
+   <widget class="QLineEdit" name="lineEdit_PutPrice">
     <property name="geometry">
      <rect>
       <x>550</x>
