@@ -18,13 +18,14 @@ class OptionCalculator:
         self.sigma = None
         self.d = None
         
-    def get_latest_price(ticker):
+    def get_latest_price_and_data(self, ticker):
         ticker = yf.Ticker(ticker)
         try:
             latest_price = ticker.history(period="1d")['Close'].values[0]
-            return round(latest_price, 2)
+            prices_df = yf.download(ticker, period="1d")
+            return round(latest_price, 2), prices_df
         except Exception as e:
-            return None
+            return None, None
         
     def is_valid_date(date):
         try:
@@ -41,7 +42,7 @@ class OptionCalculator:
             return None
         
         try:
-            prices_df = yf.download(ticker, start_date, end_date)
+            prices_df = yf.download(ticker, start=start_date, end=end_date)
         except Exception as e:
             return None
             
@@ -120,11 +121,15 @@ class Main(QMainWindow, Ui_MainWindow):
 
     def GetPrice(self):
         ticker = self.lineEdit_Ticker.text()
-        try:
-            latest_price = self.option_calculator.get_latest_price(ticker)
+        latest_price, prices_df = self.option_calculator.get_latest_price_and_data(ticker)
+        if latest_price is not None:
             self.lineEdit_SpotPrice.setText(str(round(latest_price, 2)))
-            # show chart
-            prices_df = self.option_calculator.get_latest_price_data(ticker)
+        else:
+            self.lineEdit_SpotPrice.clear()
+            self.show_error('Error Retrieving Price', 'Please check ticker symbol and try again.')
+        
+        # show chart
+        if prices_df is not None:
             chart_figure = self.option_calculator.get_stock_price_chart(ticker, prices_df)
             # remove existing chart widget if any
             if self.chart_widget:
@@ -132,11 +137,7 @@ class Main(QMainWindow, Ui_MainWindow):
             # create new QWidget to display chart
             self.chart_widget = FigureCanvas(chart_figure)
             self.layout().addWidget(self.chart_widget)
-            
-        except Exception as e:
-            self.lineEdit_SpotPrice.clear()
-            self.show_error('Error Retrieving Price', 'Please check ticker symbol and try again.')
-        
+
     def GetVolatility(self): 
         ticker = self.lineEdit_Ticker.text()
         start_date = self.lineEdit_StartDate.text()
