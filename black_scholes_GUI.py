@@ -111,7 +111,8 @@ class Main(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        self.pushButton_GetPrice.clicked.connect(self.GetPrice)        
+        self.pushButton_GetPrice.clicked.connect(self.GetPrice)
+        self.pushButton_GetVolatility.clicked.connect(self.GetVolatility)        
         self.pushButton_Calculate.clicked.connect(self.Calculate)
         self.pushButton_Reset.clicked.connect(self.reset_fields)
         self.option_calculator = OptionCalculator()
