@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Black Scholes Option Pricing Calculator</string>
+   <string>Option Pricing Calculator</string>
   </property>
   <property name="styleSheet">
    <string notr="true">background-color: rgb(23, 157, 177)</string>
