@@ -71,7 +71,7 @@ class OptionCalculator:
         return (round(fc[0][0], 2), round(fp[0][0], 2))
 
 """Main GUI Class"""
-qtCreatorFile = "black_scholes_calc.ui" 
+qtCreatorFile = "options_calc.ui" 
 Ui_MainWindow, QtBaseClass = uic.loadUiType(qtCreatorFile)
 
 class Main(QMainWindow, Ui_MainWindow):
@@ -88,9 +88,11 @@ class Main(QMainWindow, Ui_MainWindow):
 
     def European(self):
         self.optionType = 'European'
+        self.textBrowser_CalcMethod.setText("Black Scholes")
         
     def American(self):
         self.optionType = 'American'
+        self.textBrowser_CalcMethod.setText("Binomial Tree")
         
     def GetPrice(self):
         ticker = self.lineEdit_Ticker.text()
@@ -111,8 +113,8 @@ class Main(QMainWindow, Ui_MainWindow):
             call_price, put_price = self.option_calculator.blackscholes_eur(inputs)
         elif self.optionType == 'American':
             call_price, put_price = self.option_calculator.binom_amer(inputs)
-        self.lineEdit_CallPrice.setText(str(call_price))
-        self.lineEdit_PutPrice.setText(str(put_price))
+        self.textBrowser_CallPrice.setText(str(call_price))
+        self.textBrowser_PutPrice.setText(str(put_price))
 
     def reset_fields(self):
         self.lineEdit_Ticker.clear()
@@ -122,8 +124,8 @@ class Main(QMainWindow, Ui_MainWindow):
         self.lineEdit_InterestRate.clear()
         self.lineEdit_Volatility.clear()
         self.lineEdit_Dividend.clear()
-        self.lineEdit_CallPrice.clear()
-        self.lineEdit_PutPrice.clear()
+        self.textBrowser_CallPrice.clear()
+        self.textBrowser_PutPrice.clear()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
