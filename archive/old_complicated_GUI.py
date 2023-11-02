@@ -6,6 +6,7 @@ import pandas as pd
 from datetime import datetime
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
 from PyQt5 import uic
+# from PyQt5.QtChart import QtChart
 from scipy.stats import norm
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -40,7 +41,7 @@ class OptionCalculator:
             return None
         if start_date > end_date:
             return None
-        
+        # take out data validation
         try:
             prices_df = yf.download(ticker, start=start_date, end=end_date)
         except Exception as e:
@@ -61,6 +62,9 @@ class OptionCalculator:
         # valid_rows = filter(lambda x: x is not None, filtered_rows)
         # returns_df = pd.DataFrame(next(zip(*valid_rows)), columns=['Adj Close'])
         # days_count = len(returns_df) 
+        
+        # use template of big sigma
+        
 
         annualized_vol = returns_df.std() * np.sqrt(days_count)
         annualized_vol = annualized_vol['Adj Close']
@@ -81,11 +85,22 @@ class OptionCalculator:
     
     def set_input_values(self, inputs):
         for var_name in ['r', 'sigma', 'd']:
-            if var_name in inputs:
-                setattr(self, var_name, inputs[var_name] / 100)
+            setattr(self, var_name, inputs[var_name] / 100)
                 
+                
+        # use numpy array
+        # setattr(self, var_name, np.array(inputs[var_name]) / 100)
+        
+        # suggestion: use for loop for more values!!!!
+        # bid ask price
+        # strike price: give 5 strike prices 250 -5 , -10, +5, +10
+        # show 5 call prices and 5 put prices for the 5 strike prices
+        # explain step by step, first got 6 variables, then got 3 concerns
+        
         # list comprehension
         # [setattr(self, var_name, inputs[var_name] / 100) for var_name in ['r', 'sigma', 'd'] if var_name in inputs]
+        # explain in the document
+        
         
     def calculate_option_price(self, inputs):
         self.set_input_values(inputs)
@@ -154,9 +169,9 @@ class Main(QMainWindow, Ui_MainWindow):
             'S': float(self.lineEdit_SpotPrice.text()),
             'K': float(self.lineEdit_StrikePrice.text()),
             'T': float(self.lineEdit_TimetoExpiry.text()),
-            'r': float(self.lineEdit_InterestRate.text()),
-            'sigma': float(self.lineEdit_Volatility.text()),
-            'd': float(self.lineEdit_Dividend.text())
+            'r': float(self.lineEdit_InterestRate.text()) / 100,
+            'sigma': float(self.lineEdit_Volatility.text()) / 100,
+            'd': float(self.lineEdit_Dividend.text()) / 100
         }
         call_price, put_price = self.option_calculator.calculate_option_price(inputs)
         self.lineEdit_CallPrice.setText(str(call_price))
