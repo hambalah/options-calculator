@@ -11,7 +11,7 @@ class OptionCalculator:
         latest_price = ticker.history(period="1d")['Close'][0]
         return round(latest_price, 2)
         
-    """Black Scholes"""
+    """Black Scholes To Calculate European Option Price"""
     def blackscholes_eur(self, inputs):
         S, K, T, r, q, sigma = (
             inputs['S'],
@@ -30,7 +30,7 @@ class OptionCalculator:
 
         return (round(call_price, 2), round(put_price, 2))
     
-    """Binomial Tree"""
+    """Binomial Tree To Calculate American Option Price"""
     def binom_amer(self, inputs):
         S, K, T, r, q, sigma = (
             inputs['S'],
