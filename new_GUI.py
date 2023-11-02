@@ -1,7 +1,7 @@
 import sys
 from math import log, sqrt, exp
 import yfinance as yf
-from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
+from PyQt5.QtWidgets import QMainWindow, QApplication
 from PyQt5 import uic
 from scipy.stats import norm
 
@@ -124,13 +124,6 @@ class Main(QMainWindow, Ui_MainWindow):
         self.lineEdit_Dividend.clear()
         self.lineEdit_CallPrice.clear()
         self.lineEdit_PutPrice.clear()
-        
-    def show_error(self, title, message):
-        error_dialog = QMessageBox()
-        error_dialog.setIcon(QMessageBox.Critical)
-        error_dialog.setWindowTitle(title)
-        error_dialog.showMessage(message)
-        error_dialog.exec_()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
