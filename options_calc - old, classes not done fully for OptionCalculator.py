@@ -6,24 +6,20 @@ from PyQt5 import uic
 from scipy.stats import norm
 
 class OptionCalculator:
-    def __init__(self, ticker=None, inputs=None):
-        self.ticker = ticker
-        self.inputs = inputs
-    
-    def get_latest_price(self):
-        ticker = yf.Ticker(self.ticker)
+    def get_latest_price(self, ticker):
+        ticker = yf.Ticker(ticker)
         latest_price = ticker.history(period="1d")['Close'][0]
         return round(latest_price, 2)
         
     """Black Scholes To Calculate European Option Price"""
-    def blackscholes_eur(self):
+    def blackscholes_eur(self, inputs):
         S, K, T, r, q, sigma = (
-            self.inputs['S'],
-            self.inputs['K'],
-            self.inputs['T'],
-            self.inputs['r'],
-            self.inputs['q'],
-            self.inputs['sigma']
+            inputs['S'],
+            inputs['K'],
+            inputs['T'],
+            inputs['r'],
+            inputs['q'],
+            inputs['sigma']
         )
         
         d1 = (log(S / K) + (r - q + (sigma ** 2) / 2) * T) / (sigma * sqrt(T))
@@ -35,14 +31,14 @@ class OptionCalculator:
         return (round(call_price, 2), round(put_price, 2))
     
     """Binomial Tree To Calculate American Option Price"""
-    def binom_amer(self):
+    def binom_amer(self, inputs):
         S, K, T, r, q, sigma = (
-            self.inputs['S'],
-            self.inputs['K'],
-            self.inputs['T'],
-            self.inputs['r'],
-            self.inputs['q'],
-            self.inputs['sigma']
+            inputs['S'],
+            inputs['K'],
+            inputs['T'],
+            inputs['r'],
+            inputs['q'],
+            inputs['sigma']
         )
         N = 100 # no. of time steps
         dt= T/N
@@ -87,8 +83,8 @@ class Main(QMainWindow, Ui_MainWindow):
         self.pushButton_GetPrice.clicked.connect(self.GetPrice)
         self.pushButton_Calculate.clicked.connect(self.Calculate)
         self.pushButton_Reset.clicked.connect(self.reset_fields)
+        self.option_calculator = OptionCalculator()
         self.chart_widget = None
-        self.optionType = None
 
     def European(self):
         self.optionType = 'European'
@@ -100,8 +96,7 @@ class Main(QMainWindow, Ui_MainWindow):
         
     def GetPrice(self):
         ticker = self.lineEdit_Ticker.text()
-        SpotPrice = OptionCalculator(ticker=ticker)
-        latest_price = SpotPrice.get_latest_price()
+        latest_price = self.option_calculator.get_latest_price(ticker)
         self.lineEdit_SpotPrice.setText(str(latest_price))
         
     def Calculate(self):
@@ -114,11 +109,10 @@ class Main(QMainWindow, Ui_MainWindow):
             'sigma': float(self.lineEdit_Volatility.text()) / 100
         }
         
-        CalcPrice = OptionCalculator(inputs=inputs)
         if self.optionType == 'European':
-            call_price, put_price = CalcPrice.blackscholes_eur()
+            call_price, put_price = self.option_calculator.blackscholes_eur(inputs)
         elif self.optionType == 'American':
-            call_price, put_price = CalcPrice.binom_amer()
+            call_price, put_price = self.option_calculator.binom_amer(inputs)
         self.textBrowser_CallPrice.setText(str(call_price))
         self.textBrowser_PutPrice.setText(str(put_price))
 
